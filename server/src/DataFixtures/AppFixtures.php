@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Profile;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -24,6 +25,7 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 50; ++$i) {
             $dev = $i === 0;
             $user = new User();
+            $profile = new Profile();
             $password = $this->hasher->hashPassword($user, 'password');
 
             $user
@@ -31,7 +33,10 @@ class AppFixtures extends Fixture
                 ->setEmail($dev ? 'ziadi.mail.pro@gmail.com' : $i . $faker->email())
                 ->setPassword($password)
                 ->setRoles($dev ? ['ROLE_ADMIN'] : []);
+            $profile->setOwner($user);
+
             $em->persist($user);
+            $em->persist($profile);
             $em->flush();
         }
     }

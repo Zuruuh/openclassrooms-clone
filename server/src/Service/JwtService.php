@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class JwtService
@@ -20,6 +21,8 @@ class JwtService
         UserRepository           $userRepo
     ) {
         $this->jwtManager = $jwtManager;
+        $this->jwtManager->setUserIdentityField('username');
+
         $this->userRepo   = $userRepo;
     }
 
@@ -36,9 +39,9 @@ class JwtService
     public function validateToken(string $token, bool $throwing = true): array|bool
     {
         try {
-            $client = $this->jwtManager->parse(substr($token, 7));
+            $user = $this->jwtManager->parse(substr($token, 7));
 
-            return $client;
+            return $user;
         } catch (JWTDecodeFailureException $_) {
             if ($throwing) {
                 throw new UnauthorizedHttpException('Bearer', self::INVALID_TOKEN);
@@ -76,5 +79,13 @@ class JwtService
         }
 
         return false;
+    }
+
+    public function getUserFromRequest(Request $request): User
+    {
+        $authorizations = $request->headers->all('authorization')[0];
+        $payload = $this->validateToken($authorizations);
+
+        return $this->userRepo->findOneBy(['username' => $payload['username']]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Profile;
 use App\Entity\ResetUserPasswordToken;
 use App\Entity\User;
 use App\Form\ForgotPasswordFormType;
@@ -149,7 +150,12 @@ class AuthService
         $password = $this->hasher->hashPassword($user, $user->getPassword());
         $user->setPassword($password);
 
+        $profile = new Profile();
+        $profile->setOwner($user);
+
         $this->em->persist($user);
+        $this->em->persist($profile);
+
         $this->em->flush();
     }
 
