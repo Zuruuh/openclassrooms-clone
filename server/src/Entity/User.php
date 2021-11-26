@@ -82,11 +82,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'owner', targetEntity: Profile::class, cascade: ['persist', 'remove'])]
     private $profile;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $lastSeen;
+
 
 
     public function __construct()
     {
         $this->setRegisteredAt(new DateTimeImmutable());
+        $this->setLastSeen(new DateTimeImmutable());
     }
 
     public function getId(): ?int
@@ -210,6 +214,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->profile = $profile;
+
+        return $this;
+    }
+
+    public function getLastSeen(): ?\DateTimeImmutable
+    {
+        return $this->lastSeen;
+    }
+
+    public function setLastSeen(\DateTimeImmutable $lastSeen): self
+    {
+        $this->lastSeen = $lastSeen;
 
         return $this;
     }

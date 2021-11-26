@@ -32,12 +32,12 @@ class AuthSubscriber implements EventSubscriberInterface
         if ($controller instanceof ProtectedRoute) {
             $authorization = $request->headers->all('authorization');
 
-            if (
-                !isset($authorization[0]) ||
-                (bool) !($client = $this->jwtService->validateToken($authorization[0], true))
-            ) {
-                throw new AccessDeniedHttpException(jwtService::INVALID_TOKEN);
-            }
+            if (!isset($authorization[0])) throw new AccessDeniedHttpException(jwtService::INVALID_TOKEN);
+
+            $user = $this->jwtService->validateToken($authorization[0], true);
+            if (!$user) throw new AccessDeniedHttpException(jwtService::INVALID_TOKEN);
+
+            $this->jwtService->updateLastSeen($user);
         }
     }
 
