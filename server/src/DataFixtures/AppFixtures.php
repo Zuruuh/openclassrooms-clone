@@ -28,8 +28,9 @@ class AppFixtures extends Fixture
 
             $user
                 ->setUsername($dev ? 'Zuruh' : $faker->name() . $i)
-                ->setEmail($dev ? 'younesziadi@outlook.fr' : $i . $faker->email())
-                ->setPassword($password);
+                ->setEmail($dev ? 'ziadi.mail.pro@gmail.com' : $i . $faker->email())
+                ->setPassword($password)
+                ->setRoles($dev ? ['ROLE_ADMIN'] : []);
             $em->persist($user);
             $em->flush();
         }
