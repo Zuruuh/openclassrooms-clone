@@ -74,6 +74,9 @@ db-validate-schema: ## Validate the database schema
 db-validate-schema: .env.local vendor
 	$(SYMFONY) doctrine:schema:validate
 
+clear-tokens:
+	$(SYMFONY) app:clear-tokens
+
 composer.lock: composer.json
 	$(COMPOSER) update
 
