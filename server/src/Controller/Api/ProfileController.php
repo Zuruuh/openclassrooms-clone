@@ -33,7 +33,7 @@ class ProfileController extends AbstractController implements ProtectedRoute
         return $this->profileService->getProfileAction($request, (int) $id);
     }
 
-    #[Route('/edit', methods: ['PUT', 'PATCH'])]
+    #[Route('/edit', methods: ['PATCH'])]
     public function editProfileAction(Request $request): JsonResponse
     {
         return $this->profileService->editProfileAction($request);

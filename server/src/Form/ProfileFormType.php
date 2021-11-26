@@ -17,20 +17,12 @@ class ProfileFormType extends AbstractType
         $builder
             ->add('name')
             ->add('biography')
-            ->add('birthday', TextType::class, [
-                'constraints' => [
-                    new Regex('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', 'Your birthday is not valid')
-                ]
-            ])
+            ->add('birthday')
             ->add('website')
             ->add('linkedIn')
             ->add('github')
             ->add('discord')
-            ->add('country')
-            //->add('profilePicture', FileType::class)
-            //->add('lastUpdate')
-            //->add('owner')
-        ;
+            ->add('country');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -57,9 +57,13 @@ class ProfileService
             $user->getProfile()
         );
 
+        $profile->setLastUpdate(new \DateTimeImmutable());
+
         $this->em->persist($profile);
         $this->em->flush();
 
-        return new JsonResponse();
+        $profile = $this->normalizer->normalize($profile, null, ['groups' => ['display']]);
+
+        return new JsonResponse(['profile' => $profile]);
     }
 }
