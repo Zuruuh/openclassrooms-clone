@@ -26,7 +26,7 @@ class ResetUserPasswordToken
 
     public function __construct()
     {
-        $this->issuedAt = new DateTimeImmutable();
+        $this->setIssuedAt(new DateTimeImmutable());
     }
 
     public function getId(): ?int

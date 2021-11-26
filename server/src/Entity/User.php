@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -11,8 +12,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[Orm\Entity(repositoryClass: UserRepository::class)]
 #[Orm\Table(name: "`user`")]
-#[UniqueEntity('email', message: 'This email address is already in use.')]
 #[UniqueEntity('username', message: 'This username is already in use.')]
+#[UniqueEntity('email', message: 'This email address is already in use.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const MAX_EMAIL_LENGTH = 180;
@@ -33,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\Length(
         max: self::MAX_EMAIL_LENGTH,
-        maxMessage: 'Your email address cannot be more than {{ limit }} characters'
+        maxMessage: 'Your email address cannot be more than {{ limit }} characters.'
     )]
     #[Assert\Type('string')]
     #[Orm\Column(type: "string", length: self::MAX_EMAIL_LENGTH, unique: true)]
@@ -62,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex(
         pattern: '/^[A-Za-z0-9-_]*$/',
         match: true,
-        message: 'Your username is not valid. Try not using any special chars'
+        message: 'Your username is not valid. Try not using any special chars.'
     )]
     #[Assert\Length(
         min: self::MIN_USERNAME_LENGTH,
@@ -75,7 +76,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Orm\Column(type: "string", length: 32, unique: true)]
     private $username;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $registeredAt;
 
+    #[ORM\OneToOne(mappedBy: 'owner', targetEntity: Profile::class, cascade: ['persist', 'remove'])]
+    private $profile;
+
+
+
+    public function __construct()
+    {
+        $this->setRegisteredAt(new DateTimeImmutable());
+    }
 
     public function getId(): ?int
     {
@@ -109,7 +121,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return $this->getUserIdentifier();
     }
 
     /**
@@ -169,6 +181,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): self
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    public function getRegisteredAt(): ?\DateTimeImmutable
+    {
+        return $this->registeredAt;
+    }
+
+    public function setRegisteredAt(\DateTimeImmutable $registeredAt): self
+    {
+        $this->registeredAt = $registeredAt;
+
+        return $this;
+    }
+
+    public function getProfile(): ?Profile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(Profile $profile): self
+    {
+        // set the owning side of the relation if necessary
+        if ($profile->getOwner() !== $this) {
+            $profile->setOwner($this);
+        }
+
+        $this->profile = $profile;
 
         return $this;
     }
