@@ -29,4 +29,22 @@ class AuthController extends AbstractController
     {
         return $this->authService->registerAction($request);
     }
+
+    #[Route('/api/forgot-password', methods: ['POST'])]
+    public function forgotPasswordAction(Request $request): JsonResponse
+    {
+        return $this->authService->forgotPasswordAction($request);
+    }
+
+    #[Route('/api/validate-token', methods: ['GET'])]
+    public function validateTokenAction(Request $request): JsonResponse
+    {
+        return $this->authService->validateTokenAction($request);
+    }
+
+    #[Route('/api/reset-password-from-token', methods: ['POST'])]
+    public function resetPasswordFromTokenAction(Request $request): JsonResponse
+    {
+        return $this->authService->resetPasswordFromTokenAction($request);
+    }
 }
